@@ -19,7 +19,8 @@ import com.cuuuurzel.utils.MyUtils;
 public class OnScreenLayout extends RelativeLayout {
 
     /**
-     * Current direction [ dx, dy ], (both between 0 and 1).
+     * Vector representing the current direction.
+     * Should ALWAYS be normalized for best use.
      */
     public float[] direction;
 
@@ -53,7 +54,7 @@ public class OnScreenLayout extends RelativeLayout {
     public OnScreenLayout( Context c, int w, int h ) {
         super( c );
 
-        isVisible = true;
+        isVisible = false;
         toRemove  = false;
         direction = new float[]{ 0f, 0f };
 
@@ -105,7 +106,7 @@ public class OnScreenLayout extends RelativeLayout {
      * Will load the initial layout.
      */
     protected void setupInitialViewLayout() {
-        this.setBackgroundColor(0xA0FFFFFF);
+        this.setBackgroundColor( 0xA0FFFFFF );
     }
 
     /**
@@ -113,9 +114,8 @@ public class OnScreenLayout extends RelativeLayout {
      */
     public void dismiss() {
         if ( !isVisible ) { return; }
-        Context c = getContext();
-        WindowManager wm = ( WindowManager ) c.getSystemService( Context.WINDOW_SERVICE );
-        wm.removeView(this);
+        mWindowManager.removeView( this );
+        toRemove = false;
         isVisible = false;
     }
 
@@ -124,9 +124,7 @@ public class OnScreenLayout extends RelativeLayout {
      */
     public void show() {
         if ( isVisible ) { return; }
-        Context c = getContext();
-        WindowManager wm = ( WindowManager ) c.getSystemService( Context.WINDOW_SERVICE );
-        wm.addView(this, this.getLayoutParams());
+        mWindowManager.addView( this, this.getLayoutParams() );
         isVisible = true;
     }
 
@@ -182,10 +180,7 @@ public class OnScreenLayout extends RelativeLayout {
     private void updateLayout() {
         mLayoutParams.x = (int) this.getX();
         mLayoutParams.y = (int) this.getY();
-
-        mWindowManager.updateViewLayout(
-                this, mLayoutParams
-        );
+        mWindowManager.updateViewLayout( this, mLayoutParams );
     }
 
     private void setupLayoutThings( int w, int h ) {

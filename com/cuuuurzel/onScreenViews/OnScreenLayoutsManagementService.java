@@ -13,14 +13,10 @@ import java.util.ArrayList;
 public class OnScreenLayoutsManagementService extends Service {
 
     /**
-     * Animation's FPS.
-     */
-    public static float FPS = 30;
-
-    /**
      * Used to post the update callback.
+     * Please use : 1 Second / Needed frames
      */
-    public static int DT = ( int )( 1000 / FPS );
+    public static int DT = 1000 / 30;
 
     /**
      * Used to post updates.
@@ -60,6 +56,7 @@ public class OnScreenLayoutsManagementService extends Service {
         super.onCreate();
         mHandler = new Handler();
         views = new ArrayList<OnScreenLayout>();
+        lastUpdateTime = System.currentTimeMillis();
         createInitialViews();
         scheduleUpdate();
     }
@@ -71,12 +68,21 @@ public class OnScreenLayoutsManagementService extends Service {
 
 //Less important things
 
+    public void addView( OnScreenLayout x ) {
+        x.show();
+        this.views.add( x );
+    }
+
     private void scheduleUpdate() {
         mHandler.postDelayed( updateCallback, DT );
     }
 
     @Override
-    public IBinder onBind(Intent intent) { return null; }
+    public IBinder onBind( Intent intent ) { return null; }
+
+    public void invalidateAllViews() {
+        for ( OnScreenLayout view : views ) { view.invalidate(); }
+    }
 
     private long lastUpdateTime;
 }
