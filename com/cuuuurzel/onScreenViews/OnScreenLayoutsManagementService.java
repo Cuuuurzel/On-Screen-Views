@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Use this class to manage you on-screen views.
  */
-public class OnScreenViewsManagementService extends Service {
+public class OnScreenLayoutsManagementService extends Service {
 
     /**
      * Animation's FPS.
@@ -30,7 +30,7 @@ public class OnScreenViewsManagementService extends Service {
     /**
      * List of attached views.
      */
-    protected ArrayList< OnScreenView > views;
+    protected ArrayList<OnScreenLayout> views;
 
     /**
      * Used to update all the views.
@@ -40,11 +40,11 @@ public class OnScreenViewsManagementService extends Service {
         public void run() {
 
             //Get milliseconds from last update
-            currentTime = System.currentTimeMillis();
+            long currentTime = System.currentTimeMillis();
             long dt = currentTime - lastUpdateTime;
 
             //Update all visible views
-            for ( OnScreenView view : views ) {
+            for ( OnScreenLayout view : views ) {
                 if ( view.isVisible() ) { view.update( dt ); }
                 if ( view.toRemove ) { view.dismiss(); }
             }
@@ -59,7 +59,7 @@ public class OnScreenViewsManagementService extends Service {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
-        views = new ArrayList<OnScreenView>();
+        views = new ArrayList<OnScreenLayout>();
         createInitialViews();
         scheduleUpdate();
     }
@@ -78,5 +78,5 @@ public class OnScreenViewsManagementService extends Service {
     @Override
     public IBinder onBind(Intent intent) { return null; }
 
-    private long lastUpdateTime, currentTime;
+    private long lastUpdateTime;
 }

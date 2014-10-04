@@ -6,8 +6,8 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.cuuuurzel.utils.MyUtils;
@@ -16,7 +16,7 @@ import com.cuuuurzel.utils.MyUtils;
  * Use this class to manage on-screen dialogs, just like facebook chat-heads.
  * There is an integrate gesture listener, so you don't have to care.
  */
-public class OnScreenView extends View {
+public class OnScreenLayout extends RelativeLayout {
 
     /**
      * Current direction [ dx, dy ], (both between 0 and 1).
@@ -48,7 +48,9 @@ public class OnScreenView extends View {
      */
     protected LayoutInflater layoutInflater;
 
-    public OnScreenView( Context c, int w, int h ) {
+    public OnScreenLayout( Context c ) { this( c, 250, 250 ); }
+
+    public OnScreenLayout( Context c, int w, int h ) {
         super( c );
 
         isVisible = true;
@@ -112,7 +114,7 @@ public class OnScreenView extends View {
     public void dismiss() {
         if ( !isVisible ) { return; }
         Context c = getContext();
-        WindowManager wm = ( WindowManager ) c.getSystemService( c.WINDOW_SERVICE );
+        WindowManager wm = ( WindowManager ) c.getSystemService( Context.WINDOW_SERVICE );
         wm.removeView(this);
         isVisible = false;
     }
@@ -123,7 +125,7 @@ public class OnScreenView extends View {
     public void show() {
         if ( isVisible ) { return; }
         Context c = getContext();
-        WindowManager wm = ( WindowManager ) c.getSystemService( c.WINDOW_SERVICE );
+        WindowManager wm = ( WindowManager ) c.getSystemService( Context.WINDOW_SERVICE );
         wm.addView(this, this.getLayoutParams());
         isVisible = true;
     }
@@ -135,26 +137,13 @@ public class OnScreenView extends View {
         if ( isVisible ) dismiss(); else show();
     }
 
-    /**
-     * Use this to add an arbitrary view to the root.
-     */
-    protected void addViewToRoot( View v ) {
-        ( ( ViewGroup ) this.getParent() ).addView(
-                v,
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
-        );
-    }
-
 //Less important thigs
 
     private boolean isVisible;
     private WindowManager mWindowManager;
     private GestureDetector mGestureDetector;
 
-    private final void moveTo( float x, float y ) {
+    private void moveTo( float x, float y ) {
         this.setX( x );
         this.setY(y);
     }
@@ -165,12 +154,12 @@ public class OnScreenView extends View {
 
             @Override
             public boolean onSingleTapUp( MotionEvent me ) {
-                return OnScreenView.this.onClick( me );
+                return OnScreenLayout.this.onClick( me );
             }
 
             @Override
             public boolean onFling( MotionEvent m1, MotionEvent m2, float dx, float dy ) {
-                return OnScreenView.this.onFling( m1, m2, dx, dy );
+                return OnScreenLayout.this.onFling( m1, m2, dx, dy );
             }
         };
 
@@ -190,7 +179,7 @@ public class OnScreenView extends View {
         return mLayoutParams;
     }
 
-    private final void updateLayout() {
+    private void updateLayout() {
         mLayoutParams.x = (int) this.getX();
         mLayoutParams.y = (int) this.getY();
 
@@ -199,7 +188,7 @@ public class OnScreenView extends View {
         );
     }
 
-    private final void setupLayoutThings( int w, int h ) {
+    private void setupLayoutThings( int w, int h ) {
 
         Context c = getContext();
 
